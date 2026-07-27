@@ -1,0 +1,33 @@
+#!/bin/bash
+set -euo pipefail
+
+# recommended to pin to a specific version
+# See https://github.com/nubjs/nub/releases
+# version="0.6.0"
+version=${NUB_VERSION:-latest}
+
+downloadDir="$(pwd)/download"
+nubInstallDir="$downloadDir/nub"
+nubCmd="$nubInstallDir/bin/nub"
+needsInstall=true
+if [ -x "$nubCmd" ]; then
+  if [ "$version" = "latest" ]; then
+    # unpinned: any installed binary is good enough, avoid a network round trip
+    needsInstall=false
+  else
+    installedNubVersion=$("$nubCmd" --version 2>/dev/null | head -n 1 | sed -E 's/^(nub-)?v//' || true)
+    requestedNubVersion=$(echo "$version" | sed -E 's/^(nub-)?v//')
+    if [ "$installedNubVersion" = "$requestedNubVersion" ]; then
+      needsInstall=false
+    fi
+  fi
+fi
+
+if [ "$needsInstall" = true ]; then
+  echo "Installing nub $version to $nubInstallDir"
+  curl -fsSL https://nubjs.com/install.sh | NUB_INSTALL_DIR="$nubInstallDir" NUB_NO_MODIFY_PATH=1 bash -s -- "$version"
+fi
+
+export PATH="$nubInstallDir/bin:$PATH"
+
+XDG_CACHE_HOME="$nubInstallDir/cache" XDG_DATA_HOME="$nubInstallDir/data" exec "$nubCmd" "$@"
