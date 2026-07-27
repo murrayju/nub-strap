@@ -27,8 +27,8 @@ The default behavior is to install the current latest version of nub. For most p
 Example using the environment variable:
 
 ```bash
-NUB_VERSION="nub-v1.3.1" ./nub --version
-# 1.3.1
+NUB_VERSION="0.6.0" ./nub --version
+# 0.6.0
 ```
 
 ## Optional alias
