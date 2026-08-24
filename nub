@@ -30,4 +30,7 @@ fi
 
 export PATH="$nubInstallDir/bin:$PATH"
 
-XDG_CACHE_HOME="$nubInstallDir/cache" XDG_DATA_HOME="$nubInstallDir/data" exec "$nubCmd" "$@"
+# This is better scoped than overriding XDG_DATA_HOME, which can impact child processes
+export npm_config_store_dir="${npm_config_store_dir:-$nubInstallDir/store}"
+
+XDG_CACHE_HOME="$nubInstallDir/cache" exec "$nubCmd" "$@"
