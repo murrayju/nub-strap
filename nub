@@ -24,8 +24,17 @@ if [ -x "$nubCmd" ]; then
 fi
 
 if [ "$needsInstall" = true ]; then
-  echo "Installing nub $version to $nubInstallDir"
-  curl -fsSL https://nubjs.com/install.sh | NUB_INSTALL_DIR="$nubInstallDir" NUB_NO_MODIFY_PATH=1 bash -s -- "$version"
+  # Send the install messages to stderr. Then stdout has only the output of nub.
+  {
+    echo "Installing nub $version to $nubInstallDir"
+    # The installer refreshes the global nub shims (from `nub pm shim`) in the home directory.
+    # Give the installer a home directory that does not exist, so it does not change them.
+    # Keep the curl config of the user.
+    userCurlHome="${CURL_HOME:-$HOME}"
+    curl -fsSL https://nubjs.com/install.sh |
+      HOME="$nubInstallDir/no-home" XDG_DATA_HOME="$nubInstallDir/no-home" CURL_HOME="$userCurlHome" \
+        NUB_INSTALL_DIR="$nubInstallDir" NUB_NO_MODIFY_PATH=1 bash -s -- "$version"
+  } >&2
 fi
 
 export PATH="$nubInstallDir/bin:$PATH"

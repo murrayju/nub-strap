@@ -12,6 +12,8 @@ This also enables bootstrapping truly zero-dependency development environments, 
 
 The script checks if nub is installed in a local `download` directory. If not, it downloads and installs the specified version of nub there. Finally, it runs nub with any provided arguments. The result is a transparent proxy to the desired version of nub.
 
+The install messages go to stderr, so stdout has only the output of nub (for example, `$(./nub pm which)`). The install does not change the global nub shims that `nub pm shim` creates.
+
 When a specific version is requested, the installed binary's version is compared against it and nub is reinstalled if they differ. When the version is `latest` (the default), any already-installed binary is used as-is, so no version check or download happens. To pick up a newer release, delete the `download/nub` directory (or pin an explicit version).
 
 ## Usage
